@@ -15,7 +15,7 @@ function App() {
           className="border p-1"
           onClick={() => {
             startTransition(() => {
-              setCounter(counter + 1);
+              setCounter((c) => c + 1);
             });
           }}
         >
