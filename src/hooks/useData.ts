@@ -1,9 +1,13 @@
-const dataMap: Map<string, unknown> = new Map();
+import { Loadable } from "../utils/Loadable";
+
+const dataMap: Map<string, Loadable<unknown>> = new Map();
 
 export function useData<T>(cacheKey: string, fetch: () => Promise<T>): T {
-  const cachedData = dataMap.get(cacheKey) as T | undefined;
+  const cachedData = dataMap.get(cacheKey) as Loadable<T> | undefined;
   if (cachedData === undefined) {
-    throw fetch().then((d) => dataMap.set(cacheKey, d));
+    const [loadable, promise] = Loadable.newAndGetPromise(fetch());
+    dataMap.set(cacheKey, loadable);
+    throw promise;
   }
-  return cachedData;
+  return cachedData.getOrThrow();
 }
